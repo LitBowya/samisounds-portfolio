@@ -10,7 +10,8 @@ export const constants = {
       url: "#home",
       key: "1",
       sound: "/sounds/kick.mp3",
-      name: "Kick",
+      name: "Home",
+      soundName: "kick",
       image: "",
       color: "#ff1818",
     }, // Kick Drum (Bright Red)
@@ -19,7 +20,9 @@ export const constants = {
       url: "#about",
       key: "2",
       sound: "/sounds/snare.mp3",
-      name: "Snare",
+      name: "About Me",
+      soundName: "Snare",
+
       image: "",
       color: "#b59400",
     }, // Snare Drum (Yellow)
@@ -28,16 +31,17 @@ export const constants = {
       url: "#my-works",
       key: "3",
       sound: "/sounds/hihat.mp3",
-      name: "Hi-Hat Closed",
+      name: "My Works",
+      soundName: "Hi-Hat Open",
       image: "",
       color: "#2aca3c",
     }, // Closed Hi-Hat (Green)
-
     {
       url: "",
       key: "4",
       sound: "/sounds/hihat1.mp3",
-      name: "Hi-Hat Open",
+      name: "",
+      soundName: "Hi-Hat Closed",
       image: "",
       color: "#024ab3",
     }, // Open Hi-Hat (Blue)
@@ -46,7 +50,9 @@ export const constants = {
       url: "",
       key: "5",
       sound: "/sounds/tom.mp3",
-      name: "Low Tom",
+      name: "",
+      soundName: "Low Tom",
+
       image: "",
       color: "#60109f",
     }, // Low Tom (Purple)
@@ -55,7 +61,9 @@ export const constants = {
       url: "",
       key: "6",
       sound: "/sounds/tom1.mp3",
-      name: "Mid Tom",
+      name: "",
+      soundName: "Mid Tom",
+
       image: "",
       color: "#fb9100",
     }, // Mid Tom (Orange)
@@ -64,7 +72,9 @@ export const constants = {
       url: "",
       key: "7",
       sound: "/sounds/cymbal.mp3",
-      name: "High Tom",
+      name: "",
+      soundName: "Cymbal",
+
       image: "",
       color: "#087e66",
     }, // High Tom (Aqua)
@@ -73,7 +83,9 @@ export const constants = {
       url: "#contact-us",
       key: "8",
       sound: "/sounds/clap.mp3",
-      name: "Clap",
+      name: "",
+      soundName: "Clap",
+
       image: "",
       color: "#bf0258",
     }, // Clap (Hot Pink)
@@ -82,7 +94,9 @@ export const constants = {
       url: "",
       key: "9",
       sound: "/sounds/cowbell.mp3",
-      name: "Cowbell",
+      name: "",
+      soundName: "Cowbell",
+
       image: "",
       color: "#9c009c",
     }, // Cowbell (Violet)

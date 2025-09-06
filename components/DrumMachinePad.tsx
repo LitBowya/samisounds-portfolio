@@ -249,7 +249,10 @@ const DrumMachinePad: React.FC<DrumMachinePadProps> = ({
                 {pad.name}
               </p>
             ) : (
-              <span className="text-md text-gray-800">{pad.key}</span>
+              <p className="text-xs text-gray-800 flex flex-col">
+                <span>{pad.key}</span>
+                <span>{pad.soundName}</span>
+              </p>
             )}
           </button>
         ))}
