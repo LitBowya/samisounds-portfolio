@@ -13,6 +13,7 @@ type DrumPad = {
   url?: string;
   image?: string;
   color: string;
+  soundName?: string;
 };
 
 type DrumMachinePadProps = {
@@ -25,14 +26,12 @@ const DrumMachinePad: React.FC<DrumMachinePadProps> = ({
   onNavigate,
 }) => {
   const [activePad, setActivePad] = useState<string | null>(null);
-  const [navigationMode, setNavigationMode] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Use refs to store audio elements and prevent recreation
   const audioRefs = useRef<Map<string, HTMLAudioElement>>(new Map());
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Preload all audio files
+  // Preload audio
   useEffect(() => {
     const loadAudio = async () => {
       const audioMap = new Map<string, HTMLAudioElement>();
@@ -43,10 +42,9 @@ const DrumMachinePad: React.FC<DrumMachinePadProps> = ({
             if (pad.sound) {
               const audio = new Audio(pad.sound);
               audio.preload = "auto";
-              audio.volume = 0.8; // Set a reasonable volume
+              audio.volume = 0.8;
 
-              // Handle audio loading
-              return new Promise<void>((resolve, reject) => {
+              return new Promise<void>((resolve) => {
                 audio.addEventListener("canplaythrough", () => {
                   audioMap.set(pad.key, audio);
                   resolve();
@@ -54,10 +52,9 @@ const DrumMachinePad: React.FC<DrumMachinePadProps> = ({
 
                 audio.addEventListener("error", (e) => {
                   console.warn(`Failed to load audio for pad ${pad.key}:`, e);
-                  resolve(); // Don't reject, just log the warning
+                  resolve();
                 });
 
-                // Fallback timeout
                 setTimeout(() => {
                   if (!audioMap.has(pad.key)) {
                     audioMap.set(pad.key, audio);
@@ -79,7 +76,6 @@ const DrumMachinePad: React.FC<DrumMachinePadProps> = ({
 
     loadAudio();
 
-    // Cleanup function
     return () => {
       audioRefs.current.forEach((audio) => {
         audio.pause();
@@ -102,31 +98,24 @@ const DrumMachinePad: React.FC<DrumMachinePadProps> = ({
       if (!audio) return;
 
       try {
-        // Reset audio to beginning and play
         audio.currentTime = 0;
-
-        // Use play() with proper error handling
         const playPromise = audio.play();
 
         if (playPromise !== undefined) {
           playPromise
             .then(() => {
-              // Audio started playing successfully
               setActivePad(pad.key);
 
-              // Clear any existing timeout
               if (timeoutRef.current) {
                 clearTimeout(timeoutRef.current);
               }
 
-              // Set new timeout to clear active state
               timeoutRef.current = setTimeout(() => {
                 setActivePad(null);
                 timeoutRef.current = null;
               }, 150);
             })
             .catch((error) => {
-              // Handle play errors gracefully
               if (error.name !== "AbortError") {
                 console.warn(`Audio play failed for pad ${pad.key}:`, error);
               }
@@ -151,22 +140,21 @@ const DrumMachinePad: React.FC<DrumMachinePadProps> = ({
 
   const handlePadAction = useCallback(
     (pad: DrumPad) => {
-      if (navigationMode && pad.url) {
+      playSound(pad);
+
+      if (pad.url) {
         scrollToSection(pad.url);
         onNavigate?.();
-      } else {
-        playSound(pad);
       }
     },
-    [navigationMode, onNavigate, playSound, scrollToSection],
+    [onNavigate, playSound, scrollToSection],
   );
 
-  // Keyboard support with improved debouncing
+  // Keyboard support
   useEffect(() => {
     let keyPressTimeout: NodeJS.Timeout | null = null;
 
     const handleKeyPress = (e: KeyboardEvent) => {
-      // Prevent rapid key presses
       if (keyPressTimeout) return;
 
       const pad = constants.drumPad.find(
@@ -176,10 +164,9 @@ const DrumMachinePad: React.FC<DrumMachinePadProps> = ({
       if (pad) {
         handlePadAction(pad);
 
-        // Debounce key presses
         keyPressTimeout = setTimeout(() => {
           keyPressTimeout = null;
-        }, 100);
+        }, 50);
       }
     };
 
@@ -210,29 +197,16 @@ const DrumMachinePad: React.FC<DrumMachinePadProps> = ({
     <div className="flex flex-col items-center p-6 border border-white rounded-xl drum-pad-machine min-h-0">
       <h1 className="text-2xl font-bold mb-4">🎶 Drum Pad Machine</h1>
 
-      {/* Toggle for Navigation Mode */}
-      <div className="flex items-center gap-2 mb-4">
-        <label className="font-medium">Navigation Mode</label>
-        <input
-          type="checkbox"
-          checked={navigationMode}
-          onChange={(e) => setNavigationMode(e.target.checked)}
-          className="w-5 h-5 rounded-full"
-        />
-      </div>
-
-      {/* Loading indicator */}
       {isLoading && (
         <div className="text-sm text-gray-400 mb-2">Loading sounds...</div>
       )}
 
-      {/* Pads */}
       <div className="grid grid-cols-3 gap-4">
         {constants.drumPad.map((pad) => (
           <button
             key={pad.key}
             onClick={() => handlePadAction(pad)}
-            disabled={isLoading && !navigationMode}
+            disabled={isLoading}
             style={{
               background: `radial-gradient(circle, ${lightenColor(
                 pad.color,
@@ -242,18 +216,12 @@ const DrumMachinePad: React.FC<DrumMachinePadProps> = ({
             className={`hover:cursor-pointer w-20 h-20 lg:w-32 lg:h-32 rounded-2xl shadow-lg flex flex-col justify-center items-center 
               text-lg font-bold transition-all duration-150 transform active:scale-95 
               ${activePad === pad.key ? "text-gray-100 ring-4 ring-white scale-95" : ""}
-              ${isLoading && !navigationMode ? "opacity-50 cursor-not-allowed" : "hover:scale-105"}`}
+              ${isLoading ? "opacity-50 cursor-not-allowed" : "hover:scale-105"}`}
           >
-            {navigationMode ? (
-              <p className="text-xs text-gray-800 text-center px-1">
-                {pad.name}
-              </p>
-            ) : (
-              <p className="text-xs text-gray-800 flex flex-col">
-                <span>{pad.key}</span>
-                <span>{pad.soundName}</span>
-              </p>
-            )}
+            <p className="text-xs text-gray-800 flex flex-col text-center px-1">
+              <span>{pad.key}</span>
+              <span>{pad.soundName || pad.name}</span>
+            </p>
           </button>
         ))}
       </div>

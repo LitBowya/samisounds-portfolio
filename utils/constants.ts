@@ -11,7 +11,7 @@ export const constants = {
       key: "1",
       sound: "/sounds/kick.mp3",
       name: "Home",
-      soundName: "kick",
+      soundName: "Kick",
       image: "",
       color: "#ff1818",
     }, // Kick Drum (Bright Red)
