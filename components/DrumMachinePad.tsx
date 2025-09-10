@@ -213,14 +213,13 @@ const DrumMachinePad: React.FC<DrumMachinePadProps> = ({
                 40,
               )} 0%, ${pad.color} 100%)`,
             }}
-            className={`hover:cursor-pointer w-20 h-20 lg:w-32 lg:h-32 rounded-2xl shadow-lg flex flex-col justify-center items-center 
-              text-lg font-bold transition-all duration-150 transform active:scale-95 
+            className={`hover:cursor-pointer w-20 h-20 lg:w-32 lg:h-32 rounded-2xl shadow-lg flex flex-col justify-center items-center
+              text-lg font-bold transition-all duration-150 transform active:scale-95
               ${activePad === pad.key ? "text-gray-100 ring-4 ring-white scale-95" : ""}
               ${isLoading ? "opacity-50 cursor-not-allowed" : "hover:scale-105"}`}
           >
             <p className="text-xs text-gray-800 flex flex-col text-center px-1">
-              <span>{pad.key}</span>
-              <span>{pad.soundName || pad.name}</span>
+              {pad.name && (<span>{pad.name}</span>)}
             </p>
           </button>
         ))}

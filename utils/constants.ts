@@ -83,7 +83,7 @@ export const constants = {
       url: "#contact-us",
       key: "8",
       sound: "/sounds/clap.mp3",
-      name: "",
+      name: "Contact Us",
       soundName: "Clap",
 
       image: "",
